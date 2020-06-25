@@ -1,0 +1,10 @@
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>Upload statement file</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        Select a file:
+        <input type="file" accept=".xml,.csv" (change)="fileSelected($event.target.files)"/>
+        <button mat-stroked-button (click)="upload()">Upload file</button>
+    </mat-card-content>
+</mat-card>

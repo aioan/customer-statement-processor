@@ -5,9 +5,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class UiController {
-
-	@GetMapping(path = "/")
-	public String index() {
-		return "../static/index.html";
+	@GetMapping(path = "/**/{[path:[^\\\\.]*}")
+	public String forwardToAngular() {
+		return "forward:/";
 	}
 }

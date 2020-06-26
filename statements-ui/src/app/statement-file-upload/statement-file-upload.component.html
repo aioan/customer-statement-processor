@@ -3,8 +3,23 @@
         <mat-card-title>Upload statement file</mat-card-title>
     </mat-card-header>
     <mat-card-content>
-        Select a file:
-        <input type="file" accept=".xml,.csv" (change)="fileSelected($event.target.files)"/>
-        <button mat-stroked-button (click)="upload()">Upload file</button>
+        <div fxLayout="column">
+            <div fxLayout="row">
+                <input #fileInput hidden="true" type="file" accept=".xml,.csv"
+                    (change)="fileSelected($event.target.files)">
+                <button mat-flat-button (click)="fileInput.click()">Choose file</button>
+
+                <mat-form-field fxFlex="80">
+                    <input matInput type="text" [ngModel]="fileName">
+                </mat-form-field>
+            </div>
+            <div fxLayout="row" class="horizontal-spacing">
+                <button [disabled]='!file || loading' mat-flat-button color="primary" (click)="upload()">Upload</button>
+            </div>
+            <div fxLayout="column" *ngIf="loading" class="horizontal-spacing">
+                <h3>Processing your request, you will be automatically redirected once it is completed.</h3>
+                <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+            </div>
+        </div>
     </mat-card-content>
 </mat-card>

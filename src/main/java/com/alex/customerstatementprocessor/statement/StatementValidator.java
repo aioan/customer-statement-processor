@@ -13,11 +13,11 @@ public class StatementValidator {
   StatementRepository repo;
   
   public boolean isValid(Statement statement) {
-    return isUnique(statement) && hasCorrectEndBalance(statement);
+	return hasCorrectEndBalance(statement) && isUnique(statement);
   }
 
   private boolean isUnique(Statement statement) {
-    return repo.findByTransactionReference(statement.getTransactionReference()) == null;
+	  return !repo.existsById(statement.getTransactionReference());
   }
   // TODO: fix possible NPEs
   private boolean hasCorrectEndBalance(Statement statement) {

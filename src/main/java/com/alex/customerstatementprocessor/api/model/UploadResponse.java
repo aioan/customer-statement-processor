@@ -1,19 +1,15 @@
 package com.alex.customerstatementprocessor.api.model;
 
-import java.util.ArrayList;
-import java.util.List;
-import com.alex.customerstatementprocessor.statement.model.StatementError;
-
 public class UploadResponse {
 
-  private List<StatementError> errors = new ArrayList<>();
+  private String requestId;
 
-  public List<StatementError> getErrors() {
-    return errors;
-  }
+public String getRequestId() {
+	return requestId;
+}
 
-  public void setErrors(List<StatementError> errors) {
-    this.errors = errors;
-  }
+public void setRequestId(String requestId) {
+	this.requestId = requestId;
+}
 
 }

@@ -5,12 +5,15 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -43,7 +46,7 @@ class StatementServiceIntegrationTest {
     
     statementService.process(mockFile, "test-request");
     
-    Statement successfulStatement = statementRepository.findByTransactionReference(108366L);
+    Statement successfulStatement = statementRepository.findById(108366L).get();
     assertNotNull(successfulStatement);
     assertEquals(108366L, successfulStatement.getTransactionReference());
     assertEquals("NL27SNSB0917829871", successfulStatement.getAccountNumber());
@@ -69,8 +72,9 @@ class StatementServiceIntegrationTest {
     assertEquals(108366L, statementError.getTransactionReference());
     assertEquals("Candy from Willem de Vries", statementError.getDescription());
     
-    Statement successfulStatement = statementRepository.findByTransactionReference(108366L);
-    assertNull(successfulStatement);
+    Optional<Statement> successfulStatement = statementRepository.findById(108366L);
+    
+    assertFalse(successfulStatement.isPresent());
   }
   
   

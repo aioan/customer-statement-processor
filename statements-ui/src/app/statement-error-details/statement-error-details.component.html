@@ -1,0 +1,25 @@
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>Statement file processing result</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <div fxLayout="column">
+            <div fxLayout="row">
+                <h3>Your request reference is {{ requestId }}, you can use this to retrieve these results at any time.
+                </h3>
+            </div>
+            <div fxLayout="column" *ngIf="loading" class="horizontal-spacing">
+                <h3>Loading your results...</h3>
+                <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+            </div>
+            <div *ngIf="!loading" fxLayout="column" class="horizontal-spacing">
+                <h1>Results</h1>
+                <h2 *ngIf="errors.length > 0">Errors ❌</h2>
+                <div *ngFor="let error of errors">
+                    <strong>{{error.transactionReference}}</strong> - {{error.description}}
+                </div>
+                <div *ngIf="errors.length === 0">All records processed successfuly ✔️</div>
+            </div>
+        </div>
+    </mat-card-content>
+</mat-card>

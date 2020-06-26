@@ -5,14 +5,16 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "statement_errors", indexes = { @Index(name = "IDX_REQUEST_ID", columnList = "requestId") })
+@Table(name = "statement_errors")
 public class StatementError {
 
   @Id
-  @GeneratedValue(strategy=GenerationType.AUTO) 
+  @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="statement_error_seq")
+  @SequenceGenerator(name="statement_error_seq", sequenceName="STATEMENT_ERROR_SEQ")
   private Long id;
   
   private Long transactionReference;

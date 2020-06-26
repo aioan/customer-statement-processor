@@ -1,8 +1,11 @@
 package com.alex.customerstatementprocessor.statement;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,20 +33,38 @@ public class StatementService {
   @Autowired
   StatementErrorRepository statementErrorRepository;
   
-  @Transactional
-  // @Async
+  @Value("${spring.jpa.properties.hibernate.jdbc.batch_size}")
+  Integer batchSize;
+
   public void process(MultipartFile file, String requestId) throws IOException {
     Parser parser = parserFactory.getParser(extractExtension(file.getOriginalFilename()));
 
     parser.initialise(file.getInputStream());
-
+    List<Statement> statementBuffer = new ArrayList<>();
+    List<StatementError> errorBuffer = new ArrayList<>();
+    
     while(parser.hasNext()) {
       Statement statement = parser.next();
       if(validator.isValid(statement)) {
-        statementRepository.save(statement);
+    	statementBuffer.add(statement);
+    	if(statementBuffer.size() >= batchSize) {
+    		statementRepository.saveAll(statementBuffer);
+    		statementBuffer.clear();
+    	}
       } else {
-        statementErrorRepository.save(new StatementError(statement.getTransactionReference(), statement.getDescription(), requestId));
+    	errorBuffer.add(new StatementError(statement.getTransactionReference(), statement.getDescription(), requestId));
+    	if(errorBuffer.size() >= batchSize) {
+    		statementErrorRepository.saveAll(errorBuffer);
+    		errorBuffer.clear();
+    	}
       }
+    }
+    
+    if(!errorBuffer.isEmpty()) {
+    	statementErrorRepository.saveAll(errorBuffer);
+    }
+    if(!statementBuffer.isEmpty()) {
+    	statementRepository.saveAll(statementBuffer);
     }
   }
 

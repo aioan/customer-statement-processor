@@ -12,12 +12,17 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatMenuModule } from '@angular/material/menu';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { HttpClientModule } from '@angular/common/http';
-
+import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { StatementErrorDetailsComponent } from './statement-error-details/statement-error-details.component';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 @NgModule({
   declarations: [
     AppComponent,
     StatementFileUploadComponent,
-    NavbarComponent
+    NavbarComponent,
+    StatementErrorDetailsComponent
   ],
   imports: [
     BrowserModule,
@@ -28,7 +33,11 @@ import { HttpClientModule } from '@angular/common/http';
     MatToolbarModule,
     MatMenuModule,
     FlexLayoutModule,
-    HttpClientModule
+    HttpClientModule,
+    FormsModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatProgressBarModule
   ],
   providers: [],
   bootstrap: [AppComponent]

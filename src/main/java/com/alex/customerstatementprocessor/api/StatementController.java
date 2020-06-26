@@ -30,13 +30,9 @@ public class StatementController {
     statementService.process(file, requestId);
     
     UploadResponse response = new UploadResponse();
-    response.setErrors(statementErrorRepository.findByRequestId(requestId));
+    response.setRequestId(requestId);
     
     return ResponseEntity.ok(response);
   }
-  
-  @GetMapping
-  public ResponseEntity<String> get() {
-	  return ResponseEntity.ok("api");
-  }
+
 }

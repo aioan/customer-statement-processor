@@ -24,7 +24,7 @@ class StatementValidatorTest {
   
   @Test
   void givenDuplicateTransaction_isValidReturnsFalse() {
-    Mockito.when(repo.findByTransactionReference(123L)).thenReturn(new Statement());
+    Mockito.when(repo.existsById(123L)).thenReturn(true);
     
     Boolean isValid = statementValidator.isValid(getMockInvalidStatement());
     
@@ -33,7 +33,7 @@ class StatementValidatorTest {
   
   @Test
   void givenUniqueTransactionWithInvalidBalance_isValidReturnsFalse() {
-    Mockito.when(repo.findByTransactionReference(123L)).thenReturn(null);
+    Mockito.when(repo.existsById(123L)).thenReturn(false);
     
     Boolean isValid = statementValidator.isValid(getMockInvalidStatement());
     
@@ -42,7 +42,7 @@ class StatementValidatorTest {
   
   @Test
   void givenUniqueTransactionWithValidBalance_isValidReturnsTrue() {
-    Mockito.when(repo.findByTransactionReference(123L)).thenReturn(null);
+    Mockito.when(repo.existsById(123L)).thenReturn(false);
     
     Boolean isValid = statementValidator.isValid(getMockValidStatement());
     

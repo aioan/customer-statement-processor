@@ -1,11 +1,7 @@
 package com.alex.customerstatementprocessor.statement.model;
 
-import org.springframework.data.repository.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface StatementRepository extends Repository<Statement, Long> {
-
-  Statement findByTransactionReference(Long reference);
-
-  Statement save(Statement statement);
+public interface StatementRepository extends JpaRepository<Statement, Long> {
   
 }

@@ -2,7 +2,8 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { StatementFileUploadComponent } from './statement-file-upload/statement-file-upload.component';
 import { AppComponent } from './app.component';
-import { StatementErrorDetailsComponent } from './statement-error-details/statement-error-details.component';
+import { StatementRequestDetailsComponent } from './statement-request-details/statement-request-details.component';
+import { StatementRequestListComponent } from './statement-request-list/statement-request-list.component';
 
 
 const routes: Routes = [ {
@@ -10,8 +11,12 @@ const routes: Routes = [ {
   component: StatementFileUploadComponent
 },
 {
-  path: 'errors/:requestId',
-  component: StatementErrorDetailsComponent
+  path: 'reports/:requestId',
+  component: StatementRequestDetailsComponent
+},
+{
+  path: 'reports',
+  component: StatementRequestListComponent
 }
 ];
 

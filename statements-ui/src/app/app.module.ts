@@ -15,14 +15,16 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { StatementErrorDetailsComponent } from './statement-error-details/statement-error-details.component';
+import { StatementRequestDetailsComponent } from './statement-request-details/statement-request-details.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { StatementRequestListComponent } from './statement-request-list/statement-request-list.component';
 @NgModule({
   declarations: [
     AppComponent,
     StatementFileUploadComponent,
     NavbarComponent,
-    StatementErrorDetailsComponent
+    StatementRequestDetailsComponent,
+    StatementRequestListComponent
   ],
   imports: [
     BrowserModule,

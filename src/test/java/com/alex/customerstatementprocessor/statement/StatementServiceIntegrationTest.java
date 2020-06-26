@@ -17,6 +17,9 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.alex.customerstatementprocessor.request.RequestService;
+import com.alex.customerstatementprocessor.request.model.Request;
 import com.alex.customerstatementprocessor.statement.model.Statement;
 import com.alex.customerstatementprocessor.statement.model.StatementError;
 import com.alex.customerstatementprocessor.statement.model.StatementErrorRepository;
@@ -38,6 +41,9 @@ class StatementServiceIntegrationTest {
   
   @Autowired
   StatementErrorRepository errorRepository;
+  
+  @Autowired
+  RequestService requestService;
   
   @Test
   void givenXmlFileWithValidStatement_willInsertStatementOnlyInStatementsTable() throws IOException {
@@ -63,10 +69,10 @@ class StatementServiceIntegrationTest {
   void givenXmlFileWithInvalidStatement_willInsertStatementOnlyInErrorsTable() throws IOException {
     Mockito.when(mockFile.getInputStream()).thenReturn(new ByteArrayInputStream(INVALID_XML_TEST_FILE.getBytes()));
     Mockito.when(mockFile.getOriginalFilename()).thenReturn("testXml.xml");
+    Request request = requestService.initializeRequest();
+    statementService.process(mockFile, request.getId());
     
-    statementService.process(mockFile, "test-request");
-    
-    List<StatementError> errors = errorRepository.findByRequestId("test-request");
+    List<StatementError> errors = errorRepository.findByRequestId(request.getId());
     assertEquals(1, errors.size());
     StatementError statementError = errors.get(0);
     assertEquals(108366L, statementError.getTransactionReference());

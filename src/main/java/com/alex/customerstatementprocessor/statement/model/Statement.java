@@ -16,6 +16,8 @@ public class Statement {
   private BigDecimal endBalance;
   private String description;
   private BigDecimal mutation;
+  
+  private String requestId;
 
   public Long getTransactionReference() {
     return transactionReference;
@@ -64,5 +66,13 @@ public class Statement {
   public void setMutation(BigDecimal mutationAmount) {
     this.mutation = mutationAmount;
   }
+
+public String getRequestId() {
+	return requestId;
+}
+
+public void setRequestId(String requestId) {
+	this.requestId = requestId;
+}
 
 }

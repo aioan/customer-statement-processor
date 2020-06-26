@@ -1,8 +1,8 @@
 package com.alex.customerstatementprocessor.statement.parsers.impl;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -10,10 +10,13 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
+
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
 import com.alex.customerstatementprocessor.statement.model.Statement;
 import com.alex.customerstatementprocessor.statement.parsers.Parser;
+import com.alex.customerstatementprocessor.statement.parsers.exceptions.InvalidFileStructureException;
 
 @Component
 @Scope("prototype")
@@ -30,7 +33,7 @@ public class XmlParser implements Parser {
     try {
       reader = factory.createXMLEventReader(stream, "UTF-8");
     } catch (XMLStreamException e) {
-      throw new IllegalArgumentException("Invalid XML file", e);
+      throw new InvalidFileStructureException("Invalid XML file", e);
     }
   }
 
@@ -40,7 +43,7 @@ public class XmlParser implements Parser {
   }
 
   @Override
-  public boolean hasNext() throws IOException {
+  public boolean hasNext() {
     while(reader.hasNext()) {
       try {
         XMLEvent event = reader.nextEvent();
@@ -49,7 +52,7 @@ public class XmlParser implements Parser {
           return true;
         }
       } catch (XMLStreamException e) {
-        throw new IOException("Invalid XML file", e);
+    	  throw new InvalidFileStructureException("Invalid XML file", e);
       }
       
     }
@@ -57,7 +60,7 @@ public class XmlParser implements Parser {
   }
 
   @Override
-  public Statement next() throws IOException {
+  public Statement next() {
     while (reader.hasNext()) {
       try {
         XMLEvent event;
@@ -72,11 +75,11 @@ public class XmlParser implements Parser {
           return parseRecord(reader, referenceAttribute.getValue());
         }
       } catch (XMLStreamException e) {
-        throw new IOException("Invalid XML file", e);
+    	  throw new InvalidFileStructureException("Invalid XML file", e);
       }
     }
 
-    throw new IOException("Unexpected end of XML file");
+    throw new InvalidFileStructureException("Invalid XML file: Unexpected end of file");
   }
 
   private static Attribute getReferenceAttribute(XMLEvent event) {
@@ -87,19 +90,29 @@ public class XmlParser implements Parser {
     return event.isStartElement() && event.asStartElement().getName().getLocalPart().equals("record");
   }
   
-  private static Statement parseRecord(XMLEventReader reader, String reference) throws XMLStreamException, IOException {
+  private static Statement parseRecord(XMLEventReader reader, String reference) {
     Statement statement = new Statement();
     statement.setTransactionReference(Long.valueOf(reference));
     
     while(reader.hasNext()) {
-      final XMLEvent event = reader.nextEvent();
+      XMLEvent event;
+	try {
+		event = reader.nextEvent();
+	} catch (XMLStreamException e) {
+		throw new InvalidFileStructureException("Unable to parse XML file", e);
+	}
       if(event.isEndElement() && event.asEndElement().getName().getLocalPart().equals("record")) {
         return statement;
       }
       if(event.isStartElement()) {
         StartElement element = event.asStartElement();
         String elementName = element.getName().getLocalPart();
-        String elementText = reader.getElementText();
+        String elementText;
+		try {
+			elementText = reader.getElementText();
+		} catch (XMLStreamException e) {
+			throw new InvalidFileStructureException("Unable to parse XML file", e);
+		}
         switch(elementName) {
           case "accountNumber":
             statement.setAccountNumber(elementText);
@@ -117,7 +130,7 @@ public class XmlParser implements Parser {
             statement.setEndBalance(new BigDecimal(elementText));
             break;
           default:
-            throw new IOException("Invalid XML file");
+            throw new InvalidFileStructureException("Unknown element: " + elementName);
         }
       }
     }

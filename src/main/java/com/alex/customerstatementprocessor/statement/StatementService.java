@@ -6,9 +6,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.alex.customerstatementprocessor.statement.model.Statement;
@@ -36,16 +34,21 @@ public class StatementService {
   @Value("${spring.jpa.properties.hibernate.jdbc.batch_size}")
   Integer batchSize;
 
-  public void process(MultipartFile file, String requestId) throws IOException {
-    Parser parser = parserFactory.getParser(extractExtension(file.getOriginalFilename()));
+  public void process(MultipartFile file, String requestId) {
+    Parser parser = parserFactory.getParser(file.getOriginalFilename());
 
-    parser.initialise(file.getInputStream());
+    try {
+		parser.initialise(file.getInputStream());
+	} catch (IOException e) {
+		throw new IllegalArgumentException("Unable to read file", e);
+	}
     List<Statement> statementBuffer = new ArrayList<>();
     List<StatementError> errorBuffer = new ArrayList<>();
     
     while(parser.hasNext()) {
       Statement statement = parser.next();
       if(validator.isValid(statement)) {
+    	statement.setRequestId(requestId);
     	statementBuffer.add(statement);
     	if(statementBuffer.size() >= batchSize) {
     		statementRepository.saveAll(statementBuffer);
@@ -66,11 +69,6 @@ public class StatementService {
     if(!statementBuffer.isEmpty()) {
     	statementRepository.saveAll(statementBuffer);
     }
-  }
-
-  private static String extractExtension(String filename) {
-    // TODO make this pretty
-    return filename.substring(filename.lastIndexOf('.') + 1);
   }
 
 }

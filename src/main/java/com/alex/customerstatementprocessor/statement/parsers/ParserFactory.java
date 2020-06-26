@@ -6,6 +6,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
+import com.alex.customerstatementprocessor.statement.parsers.exceptions.UnsupportedFileTypeException;
+
 @Component
 public class ParserFactory implements ApplicationContextAware {
 
@@ -14,12 +16,13 @@ public class ParserFactory implements ApplicationContextAware {
 
   private ApplicationContext applicationContext;
 
-  public Parser getParser(String fileExtension) {
+  public Parser getParser(String filename) {
+	String fileExtension = extractExtension(filename);
     Parser parser = parsers
         .stream()
         .filter(p -> p.supports(fileExtension))
         .findAny()
-        .orElseThrow(() -> new IllegalArgumentException("Unsupported file extension " + fileExtension));
+        .orElseThrow(() -> new UnsupportedFileTypeException("Unsupported file extension " + fileExtension));
 
     return applicationContext.getBean(parser.getClass());
   }
@@ -27,5 +30,15 @@ public class ParserFactory implements ApplicationContextAware {
   @Override
   public void setApplicationContext(ApplicationContext applicationContext) {
     this.applicationContext = applicationContext;
+  }
+  
+  private static String extractExtension(String filename) {
+    int extensionStart = filename.lastIndexOf('.');
+    
+    if(extensionStart > 0 && extensionStart < filename.length()) {
+    	return filename.substring(extensionStart + 1);
+    } else {
+    	throw new UnsupportedFileTypeException("Cannot determine file extension");
+    }
   }
 }

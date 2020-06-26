@@ -1,16 +1,17 @@
 package com.alex.customerstatementprocessor.statement.parsers;
 
-import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
+
 import com.alex.customerstatementprocessor.statement.model.Statement;
 
-public interface Parser {
+public interface Parser extends Iterator<Statement> {
 
-  void initialise(InputStream stream) throws IOException;
+  void initialise(InputStream stream);
   
-  boolean hasNext() throws IOException;
+  boolean hasNext();
   
-  Statement next() throws IOException;
+  Statement next();
 
   Boolean supports(String fileExtension);
 }

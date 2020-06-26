@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { StatementErrorDetailsComponent } from './statement-error-details.component';
+import { StatementRequestDetailsComponent } from './statement-request-details.component';
 
 describe('StatementErrorDetailsComponent', () => {
-  let component: StatementErrorDetailsComponent;
-  let fixture: ComponentFixture<StatementErrorDetailsComponent>;
+  let component: StatementRequestDetailsComponent;
+  let fixture: ComponentFixture<StatementRequestDetailsComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ StatementErrorDetailsComponent ]
+      declarations: [ StatementRequestDetailsComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(StatementErrorDetailsComponent);
+    fixture = TestBed.createComponent(StatementRequestDetailsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

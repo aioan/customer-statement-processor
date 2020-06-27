@@ -1,22 +1,24 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { StatementRequestApiService } from '../statement-request-api-service/statement-request-api.service';
+import { StatementReportApiService } from '../statement-report-api-service/statement-report-api.service';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 @Component({
-  selector: 'app-statement-request-details',
-  templateUrl: './statement-request-details.component.html',
-  styleUrls: ['./statement-request-details.component.scss']
+  selector: 'app-statement-report-details',
+  templateUrl: './statement-report-details.component.html',
+  styleUrls: ['./statement-report-details.component.scss']
 })
-export class StatementRequestDetailsComponent implements OnInit, OnDestroy {
+export class StatementReportDetailsComponent implements OnInit, OnDestroy {
   requestId: any;
   errors: any;
   loading = false;
   private sub: Subscription;
   duration: number;
   errorMessage: string;
+  processedCount: number;
+  throughput: String;
 
   constructor(
-    private statementErrorApiService: StatementRequestApiService,
+    private statementErrorApiService: StatementReportApiService,
     private route: ActivatedRoute) { }
 
   ngOnInit(): void {
@@ -25,8 +27,10 @@ export class StatementRequestDetailsComponent implements OnInit, OnDestroy {
       this.requestId = params.requestId;
       this.statementErrorApiService.getById(this.requestId).subscribe(response => {
         this.errors = response.statementErrors;
-        if(response.finishedDate) {
-          this.duration = new Date(response.finishedDate).getTime() - new Date(response.createdDate).getTime();
+        this.processedCount = response.processedEntriesCount;
+        if(response.finishDate) {
+          this.duration = new Date(response.finishDate).getTime() - new Date(response.startDate).getTime();
+          this.throughput = (this.processedCount / (this.duration / 1000)).toFixed(0); 
         }
       },
       e => {

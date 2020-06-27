@@ -14,7 +14,7 @@
                 </mat-form-field>
             </div>
             <div fxLayout="row" class="horizontal-spacing">
-                <button [disabled]='!file || loading || errorMessage' mat-flat-button color="primary" (click)="upload()">Upload</button>
+                <button [disabled]='!file || loading || invalidFile' mat-flat-button color="primary" (click)="upload()">Upload</button>
             </div>
             <div fxLayout="column" *ngIf="loading" class="horizontal-spacing">
                 <h3>Processing your request, you will be automatically redirected once it is completed.</h3>

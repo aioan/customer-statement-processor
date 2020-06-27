@@ -19,7 +19,7 @@ import com.alex.customerstatementprocessor.statement.parsers.exceptions.InvalidF
 public class CsvParser implements Parser {
 
   private BufferedReader reader;
-  
+
   private String cachedLine;
 
   @Override
@@ -27,10 +27,10 @@ public class CsvParser implements Parser {
     reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
     // Skip header line
     try {
-		reader.readLine();
-	} catch (IOException e) {
-		throw new InvalidFileStructureException("Unable to parse CSV file", e);
-	}
+      reader.readLine();
+    } catch (IOException e) {
+      throw new InvalidFileStructureException("Unable to parse CSV file", e);
+    }
   }
 
   @Override
@@ -41,10 +41,10 @@ public class CsvParser implements Parser {
   @Override
   public boolean hasNext() {
     try {
-		cachedLine = reader.readLine();
-	} catch (IOException e) {
-		throw new InvalidFileStructureException("Unable to parse CSV file", e);
-	}
+      cachedLine = reader.readLine();
+    } catch (IOException e) {
+      throw new InvalidFileStructureException("Unable to parse CSV file", e);
+    }
     // Processing stops on first empty or null line
     return StringUtils.hasText(cachedLine);
   }
@@ -52,32 +52,36 @@ public class CsvParser implements Parser {
   @Override
   public Statement next() {
     String nextLine;
-    if(cachedLine != null) {
+    if (cachedLine != null) {
       nextLine = cachedLine;
       cachedLine = null;
     } else {
       try {
-		nextLine = reader.readLine();
-	} catch (IOException e) {
-		throw new InvalidFileStructureException("Unable to parse CSV file", e);
-	}
+        nextLine = reader.readLine();
+      } catch (IOException e) {
+        throw new InvalidFileStructureException("Unable to parse CSV file", e);
+      }
     }
     return parseFromCsvLine(nextLine);
   }
-  
+
   private Statement parseFromCsvLine(String csvLine) {
     String[] csvData = csvLine.split(",");
-    if(csvData.length != 6) {
-    	throw new InvalidFileStructureException("Invalid structure at line: " + csvLine);
+    if (csvData.length != 6) {
+      throw new InvalidFileStructureException("Invalid structure at line: " + csvLine);
     }
-    Statement statement = new Statement();
-    statement.setTransactionReference(Long.valueOf(csvData[0]));
-    statement.setAccountNumber(csvData[1]);
-    statement.setDescription(csvData[2]);
-    statement.setStartingBalance(new BigDecimal(csvData[3]));
-    statement.setMutation(new BigDecimal(csvData[4]));
-    statement.setEndBalance(new BigDecimal(csvData[5]));
+    try {
+      Statement statement = new Statement();
+      statement.setTransactionReference(Long.valueOf(csvData[0]));
+      statement.setAccountNumber(csvData[1]);
+      statement.setDescription(csvData[2]);
+      statement.setStartingBalance(new BigDecimal(csvData[3]));
+      statement.setMutation(new BigDecimal(csvData[4]));
+      statement.setEndBalance(new BigDecimal(csvData[5]));
 
-    return statement;
+      return statement;
+    } catch (NumberFormatException e) {
+      throw new InvalidFileStructureException("Invalid amount", e);
+    }
   }
 }

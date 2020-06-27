@@ -1,7 +1,7 @@
 package com.alex.customerstatementprocessor.statement;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,15 +9,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.alex.customerstatementprocessor.statement.model.ProcessingResult;
 import com.alex.customerstatementprocessor.statement.model.Statement;
 import com.alex.customerstatementprocessor.statement.model.StatementError;
-import com.alex.customerstatementprocessor.statement.model.StatementErrorRepository;
-import com.alex.customerstatementprocessor.statement.model.StatementRepository;
 import com.alex.customerstatementprocessor.statement.parsers.Parser;
 import com.alex.customerstatementprocessor.statement.parsers.ParserFactory;
+import com.alex.customerstatementprocessor.statement.repo.StatementErrorRepository;
+import com.alex.customerstatementprocessor.statement.repo.StatementRepository;
 
 @Service
-public class StatementService {
+public class StatementUploadService {
 
   @Autowired
   StatementValidator validator;
@@ -34,21 +35,17 @@ public class StatementService {
   @Value("${spring.jpa.properties.hibernate.jdbc.batch_size}")
   Integer batchSize;
 
-  public void process(MultipartFile file, String requestId) {
-    Parser parser = parserFactory.getParser(file.getOriginalFilename());
+  public ProcessingResult processFile(MultipartFile file, String requestId) {
+	Date startDate = new Date();
+    Parser parser = parserFactory.getParser(file);
 
-    try {
-		parser.initialise(file.getInputStream());
-	} catch (IOException e) {
-		throw new IllegalArgumentException("Unable to read file", e);
-	}
-    List<Statement> statementBuffer = new ArrayList<>();
-    List<StatementError> errorBuffer = new ArrayList<>();
+    List<Statement> statementBuffer = new ArrayList<>(batchSize);
+    List<StatementError> errorBuffer = new ArrayList<>(batchSize);
     
+    Integer processedEntries = 0;
     while(parser.hasNext()) {
       Statement statement = parser.next();
       if(validator.isValid(statement)) {
-    	statement.setRequestId(requestId);
     	statementBuffer.add(statement);
     	if(statementBuffer.size() >= batchSize) {
     		statementRepository.saveAll(statementBuffer);
@@ -61,6 +58,7 @@ public class StatementService {
     		errorBuffer.clear();
     	}
       }
+      processedEntries++;
     }
     
     if(!errorBuffer.isEmpty()) {
@@ -69,6 +67,13 @@ public class StatementService {
     if(!statementBuffer.isEmpty()) {
     	statementRepository.saveAll(statementBuffer);
     }
-  }
+    
+    ProcessingResult result = new ProcessingResult();
+    result.setRequestId(requestId);
+    result.setStartDate(startDate);
+    result.setEndDate(new Date());
+    result.setProcessedEntriesCount(processedEntries);
 
+    return result;
+  }
 }

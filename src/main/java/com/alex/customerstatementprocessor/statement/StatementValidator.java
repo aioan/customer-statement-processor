@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.alex.customerstatementprocessor.statement.model.Statement;
-import com.alex.customerstatementprocessor.statement.model.StatementRepository;
+import com.alex.customerstatementprocessor.statement.repo.StatementRepository;
 
 @Component
 public class StatementValidator {

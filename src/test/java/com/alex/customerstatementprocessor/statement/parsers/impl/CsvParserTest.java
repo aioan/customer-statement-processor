@@ -1,5 +1,6 @@
 package com.alex.customerstatementprocessor.statement.parsers.impl;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,12 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import com.alex.customerstatementprocessor.statement.model.Statement;
+import com.alex.customerstatementprocessor.statement.parsers.exceptions.InvalidFileStructureException;
 import org.junit.jupiter.api.Assertions;
 
 class CsvParserTest {
 
   @Test
-  public void givenCorrectCsvFile_returnsExpectedOutput() throws IOException {
+  void givenCorrectCsvFile_returnsExpectedOutput() throws IOException {
     CsvParser underTest = new CsvParser();
     
     underTest.initialise(getValidCsvFile());
@@ -41,6 +43,28 @@ class CsvParserTest {
     Assertions.assertEquals("Clothes for Rik Theuß", lastRecord.getDescription());
   }
   
+  @Test
+  void givenCsvFileWithWrongNumberOfColumns_throwInvalidFileStructureException() {
+    CsvParser underTest = new CsvParser();
+
+    underTest.initialise(getWrongNumberOfColumnsCsvFile());
+
+    assertThrows(InvalidFileStructureException.class, () -> {
+      underTest.next();
+    });
+  }
+  
+  @Test
+  void givenCsvFileWithInvalidNumberValues_throwInvalidFileStructureException() {
+    CsvParser underTest = new CsvParser();
+
+    underTest.initialise(getInvalidNumberValueCsvFile());
+
+    assertThrows(InvalidFileStructureException.class, () -> {
+      underTest.next();
+    });
+  }
+  
   private static InputStream getValidCsvFile() {
     String validCsvFile = "Reference,Account Number,Description,Start Balance,Mutation,End Balance\r\n" + 
         "132843,NL56RABO0149876948,Flowers for Erik Bakker,90.68,-45.33,45.35\r\n" + 
@@ -56,6 +80,14 @@ class CsvParserTest {
         "";
     
       return new ByteArrayInputStream(validCsvFile.getBytes(Charset.forName("UTF-8")));
+  }
+  
+  private static InputStream getWrongNumberOfColumnsCsvFile() {
+    return new ByteArrayInputStream("\r\n1,2,3,4,5".getBytes(Charset.forName("UTF-8")));
+  }
+  
+  private static InputStream getInvalidNumberValueCsvFile() {
+    return new ByteArrayInputStream("\r\n1,2,3,z,y,x".getBytes(Charset.forName("UTF-8")));
   }
 
 }

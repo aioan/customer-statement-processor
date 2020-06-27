@@ -1,4 +1,4 @@
-package com.alex.customerstatementprocessor.api;
+package com.alex.customerstatementprocessor.report.api;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,19 +10,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alex.customerstatementprocessor.request.RequestService;
-import com.alex.customerstatementprocessor.request.model.Request;
+import com.alex.customerstatementprocessor.report.ReportService;
+import com.alex.customerstatementprocessor.report.model.Report;
 
 @RestController
-@RequestMapping("/requests")
-public class RequestController {
+@RequestMapping("/api/reports")
+public class ReportController {
 
   @Autowired
-  private RequestService requestService;
+  private ReportService reportService;
   
   @GetMapping("{requestId}")
-  public ResponseEntity<Request> getRequest(@PathVariable("requestId") String requestId) {
-	Optional<Request> request = requestService.getRequestById(requestId);
+  public ResponseEntity<Report> getReportForRequest(@PathVariable("requestId") String requestId) {
+	Optional<Report> request = reportService.getReportByRequestId(requestId);
 	
 	if(request.isPresent()) {
 		return ResponseEntity.ok(request.get());
@@ -32,8 +32,8 @@ public class RequestController {
   }
   
   @GetMapping
-  public ResponseEntity<List<Request>> getAllRequests() {
-	  return ResponseEntity.ok(requestService.getAll());
+  public ResponseEntity<List<Report>> getAllRequests() {
+	  return ResponseEntity.ok(reportService.getAll());
   }
 
 }

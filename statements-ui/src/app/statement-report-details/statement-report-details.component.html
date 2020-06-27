@@ -21,7 +21,7 @@
                 <h1>Results</h1>
                 <h2>Overview</h2>
                 <div *ngIf="duration">
-                    Request was processed in {{ duration }} ms.
+                    A total of {{ processedCount }} entries were processed in {{ duration }} ms. ({{ throughput }} per second)
                 </div>
                 <div *ngIf="!duration">
                     Request is still being processed. Refresh this page to update the results.

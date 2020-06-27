@@ -2,8 +2,8 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { StatementFileUploadComponent } from './statement-file-upload/statement-file-upload.component';
 import { AppComponent } from './app.component';
-import { StatementRequestDetailsComponent } from './statement-request-details/statement-request-details.component';
-import { StatementRequestListComponent } from './statement-request-list/statement-request-list.component';
+import { StatementReportDetailsComponent } from './statement-report-details/statement-report-details.component';
+import { StatementReportListComponent } from './statement-report-list/statement-report-list.component';
 
 
 const routes: Routes = [ {
@@ -12,11 +12,11 @@ const routes: Routes = [ {
 },
 {
   path: 'reports/:requestId',
-  component: StatementRequestDetailsComponent
+  component: StatementReportDetailsComponent
 },
 {
   path: 'reports',
-  component: StatementRequestListComponent
+  component: StatementReportListComponent
 }
 ];
 

@@ -1,29 +1,27 @@
 package com.alex.customerstatementprocessor.statement;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import com.alex.customerstatementprocessor.request.RequestService;
-import com.alex.customerstatementprocessor.request.model.Request;
+import com.alex.customerstatementprocessor.report.ReportService;
 import com.alex.customerstatementprocessor.statement.model.Statement;
 import com.alex.customerstatementprocessor.statement.model.StatementError;
-import com.alex.customerstatementprocessor.statement.model.StatementErrorRepository;
-import com.alex.customerstatementprocessor.statement.model.StatementRepository;
+import com.alex.customerstatementprocessor.statement.repo.StatementErrorRepository;
+import com.alex.customerstatementprocessor.statement.repo.StatementRepository;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -34,7 +32,7 @@ class StatementServiceIntegrationTest {
   MultipartFile mockFile;
 
   @Autowired
-  StatementService statementService;
+  StatementUploadService statementService;
   
   @Autowired
   StatementRepository statementRepository;
@@ -43,14 +41,14 @@ class StatementServiceIntegrationTest {
   StatementErrorRepository errorRepository;
   
   @Autowired
-  RequestService requestService;
+  ReportService requestService;
   
   @Test
   void givenXmlFileWithValidStatement_willInsertStatementOnlyInStatementsTable() throws IOException {
     Mockito.when(mockFile.getInputStream()).thenReturn(new ByteArrayInputStream(VALID_XML_TEST_FILE.getBytes()));
     Mockito.when(mockFile.getOriginalFilename()).thenReturn("testXml.xml");
     
-    statementService.process(mockFile, "test-request");
+    statementService.processFile(mockFile, "test-request");
     
     Statement successfulStatement = statementRepository.findById(108366L).get();
     assertNotNull(successfulStatement);
@@ -69,10 +67,10 @@ class StatementServiceIntegrationTest {
   void givenXmlFileWithInvalidStatement_willInsertStatementOnlyInErrorsTable() throws IOException {
     Mockito.when(mockFile.getInputStream()).thenReturn(new ByteArrayInputStream(INVALID_XML_TEST_FILE.getBytes()));
     Mockito.when(mockFile.getOriginalFilename()).thenReturn("testXml.xml");
-    Request request = requestService.initializeRequest();
-    statementService.process(mockFile, request.getId());
     
-    List<StatementError> errors = errorRepository.findByRequestId(request.getId());
+    statementService.processFile(mockFile, "test");
+    
+    List<StatementError> errors = errorRepository.findByRequestId("test");
     assertEquals(1, errors.size());
     StatementError statementError = errors.get(0);
     assertEquals(108366L, statementError.getTransactionReference());

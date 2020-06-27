@@ -39,6 +39,7 @@ export class StatementFileUploadComponent implements OnInit {
           break;
         default:
           this.errorMessage = "An unexpected error ocurred while processing your request. Please try again later.";
+          this.invalidFile = false;
       }
     }).add(() =>  this.loading = false);;
   }

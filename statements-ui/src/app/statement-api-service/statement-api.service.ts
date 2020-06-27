@@ -12,6 +12,6 @@ export class StatementApiService {
   public uploadFile(file: any): Observable<any> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.http.post('statements', formData);
+    return this.http.post('api/statements', formData);
   }
 }

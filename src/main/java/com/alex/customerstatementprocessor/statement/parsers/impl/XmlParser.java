@@ -2,6 +2,7 @@ package com.alex.customerstatementprocessor.statement.parsers.impl;
 
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.util.NoSuchElementException;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -43,6 +44,9 @@ public class XmlParser implements Parser {
   @Override
   public boolean hasNext() {
     try {
+      if(cachedEvent != null) {
+        return true;
+      }
       while (reader.hasNext()) {
         XMLEvent event = reader.nextEvent();
         if (isRecordStartEvent(event)) {
@@ -58,6 +62,9 @@ public class XmlParser implements Parser {
 
   @Override
   public Statement next() {
+    if(!hasNext()) {
+      throw new NoSuchElementException();
+    }
     while (reader.hasNext()) {
       try {
         XMLEvent event;

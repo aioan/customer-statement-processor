@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-
+import java.util.NoSuchElementException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -17,6 +17,8 @@ import com.alex.customerstatementprocessor.statement.parsers.exceptions.InvalidF
 @Component
 @Scope("prototype")
 public class CsvParser implements Parser {
+
+  private static final String UNABLE_TO_PARSE_CSV_FILE = "Unable to parse CSV file";
 
   private BufferedReader reader;
 
@@ -29,7 +31,7 @@ public class CsvParser implements Parser {
     try {
       reader.readLine();
     } catch (IOException e) {
-      throw new InvalidFileStructureException("Unable to parse CSV file", e);
+      throw new InvalidFileStructureException(UNABLE_TO_PARSE_CSV_FILE, e);
     }
   }
 
@@ -41,16 +43,22 @@ public class CsvParser implements Parser {
   @Override
   public boolean hasNext() {
     try {
+      if (StringUtils.hasText(cachedLine)) {
+        return true;
+      }
       cachedLine = reader.readLine();
+      // Processing stops on first empty or null line
+      return StringUtils.hasText(cachedLine);
     } catch (IOException e) {
-      throw new InvalidFileStructureException("Unable to parse CSV file", e);
+      throw new InvalidFileStructureException(UNABLE_TO_PARSE_CSV_FILE, e);
     }
-    // Processing stops on first empty or null line
-    return StringUtils.hasText(cachedLine);
   }
 
   @Override
   public Statement next() {
+    if(!hasNext()) {
+      throw new NoSuchElementException();
+    }
     String nextLine;
     if (cachedLine != null) {
       nextLine = cachedLine;
@@ -59,7 +67,7 @@ public class CsvParser implements Parser {
       try {
         nextLine = reader.readLine();
       } catch (IOException e) {
-        throw new InvalidFileStructureException("Unable to parse CSV file", e);
+        throw new InvalidFileStructureException(UNABLE_TO_PARSE_CSV_FILE, e);
       }
     }
     return parseFromCsvLine(nextLine);

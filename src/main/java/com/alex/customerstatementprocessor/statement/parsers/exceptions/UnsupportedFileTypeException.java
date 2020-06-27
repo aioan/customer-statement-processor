@@ -7,8 +7,4 @@ public class UnsupportedFileTypeException extends RuntimeException {
 		super(message);
 	}
 
-	public UnsupportedFileTypeException(String message, Throwable cause) {
-		super(message, cause);
-	}
-
 }

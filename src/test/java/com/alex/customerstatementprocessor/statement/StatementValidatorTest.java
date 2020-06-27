@@ -26,7 +26,7 @@ class StatementValidatorTest {
   void givenDuplicateTransaction_isValidReturnsFalse() {
     Mockito.when(repo.existsById(123L)).thenReturn(true);
 
-    Boolean isValid = statementValidator.isValid(getMockInvalidStatement());
+    Boolean isValid = statementValidator.isValid(getMockValidStatement());
 
     assertFalse(isValid);
   }

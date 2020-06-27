@@ -45,7 +45,7 @@ public class StatementUploadService {
     Integer processedEntries = 0;
     while(parser.hasNext()) {
       Statement statement = parser.next();
-      if(validator.isValid(statement)) {
+      if(!statementBuffer.contains(statement) && validator.isValid(statement)) {
     	statementBuffer.add(statement);
     	if(statementBuffer.size() >= batchSize) {
     		statementRepository.saveAll(statementBuffer);

@@ -4,19 +4,25 @@ import java.math.BigDecimal;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "statements")
 public class Statement {
   @Id
   private Long transactionReference;
-  
+
+  @Transient
   private String accountNumber;
+  @Transient
   private BigDecimal startingBalance;
+  @Transient
   private BigDecimal endBalance;
+  @Transient
   private String description;
+  @Transient
   private BigDecimal mutation;
-  
+
   public Long getTransactionReference() {
     return transactionReference;
   }
@@ -65,4 +71,34 @@ public class Statement {
     this.mutation = mutationAmount;
   }
 
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result =
+        prime * result + ((transactionReference == null) ? 0 : transactionReference.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    Statement other = (Statement) obj;
+    if (transactionReference == null) {
+      if (other.transactionReference != null) {
+        return false;
+      }
+    } else if (!transactionReference.equals(other.transactionReference)) {
+      return false;
+    }
+    return true;
+  }
 }

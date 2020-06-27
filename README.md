@@ -13,7 +13,7 @@
 
 ## Approach
 
-Files are processed record by record and records are flushed to the database in batches (configured by the JDBC batch size), to reduce the number of DB round trips and scale with larger files. Each valid record has its transaction IT inserted in the database, each invalid record has the transaction id and description inserted in a separate table, linked to the request id.
+Files are processed record by record and records are flushed to the database in batches (configured by the JDBC batch size), to reduce the number of DB round trips and scale with larger files. Each valid record has its transaction ID inserted in the database, each invalid record has the transaction id and description inserted in a separate table, linked to the request id.
 
 At the end of processing, a report is generated and saved in the database. Each request is assigned a UUID that is also used as the report id and as a key to retrieve the error list.
 

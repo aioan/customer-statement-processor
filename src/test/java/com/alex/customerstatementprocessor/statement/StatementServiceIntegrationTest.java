@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -53,11 +52,6 @@ class StatementServiceIntegrationTest {
     Statement successfulStatement = statementRepository.findById(108366L).get();
     assertNotNull(successfulStatement);
     assertEquals(108366L, successfulStatement.getTransactionReference());
-    assertEquals("NL27SNSB0917829871", successfulStatement.getAccountNumber());
-    assertEquals("Candy from Willem de Vries", successfulStatement.getDescription());
-    assertEquals(0, new BigDecimal("10").compareTo(successfulStatement.getStartingBalance()));
-    assertEquals(0, new BigDecimal("10").compareTo(successfulStatement.getMutation()));
-    assertEquals(0, new BigDecimal("20").compareTo(successfulStatement.getEndBalance()));
     
     List<StatementError> errors = errorRepository.findByRequestId("test-request");
     assertEquals(0, errors.size());
